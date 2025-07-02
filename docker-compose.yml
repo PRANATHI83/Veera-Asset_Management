@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: veera_asset_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin234
+      POSTGRES_DB: asset_management
+    ports:
+      - '5434:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - veera-network
+
+  backend:
+    build: ./Backend
+    container_name: veera_asset_backend
+    ports:
+      - '3001:3001'
+    depends_on:
+      - postgres
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: admin234
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: asset_management
+    networks:
+      - veera-network
+
+  frontend:
+    build: ./Frontend
+    container_name: veera_asset_frontend
+    ports:
+      - '8003:80'
+    depends_on:
+      - backend
+    networks:
+      - veera-network
+
+  hr:
+    build: ./HR
+    container_name: veera_asset_hr
+    ports:
+      - '8004:80'
+    depends_on:
+      - backend
+    networks:
+      - veera-network
+
+  request:
+    build: ./Request
+    container_name: veera_asset_request
+    ports:
+      - '8005:80'
+    depends_on:
+      - backend
+    networks:
+      - veera-network
+
+volumes:
+  pgdata:
+
+networks:
+  veera-network:
+    driver: bridge
