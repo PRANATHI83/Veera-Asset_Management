@@ -665,7 +665,7 @@ async function handleFormSubmission() {
     return false;
 }
 
-async function submitRequest() {
+ asyncfunction submitRequest() {
       event.preventDefault();
     if (!validateModalName() || !validateModalEmployeeID() || !validateAssetName() || !validateReason()) {
         return false;
